@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  back-end-1:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    image: back-end-image
+    expose:
+      - "5252"
+    networks:
+      - softy-pinko-network
+
+  back-end-2:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    image: back-end-image
+    expose:
+      - "5252"
+    networks:
+      - softy-pinko-network
+
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    image: front-end-image
+    expose:
+      - "9000"
+    depends_on:
+      - back-end-1
+      - back-end-2
+    networks:
+      - softy-pinko-network
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    image: proxy-image
+    ports:
+      - "80:80"
+    depends_on:
+      - front-end
+      - back-end-1
+      - back-end-2
+    networks:
+      - softy-pinko-network
+
+networks:
+  softy-pinko-network:
+    driver: bridge
